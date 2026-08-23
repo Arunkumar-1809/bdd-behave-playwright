@@ -1,0 +1,60 @@
+Feature: Product Inventory and Cart # features/inventory.feature:1
+  As a logged-in user
+  I want to browse products and add them to my cart
+  So that I can purchase items
+  Feature: Product Inventory and Cart  # features/inventory.feature:1
+
+  Scenario: Add a single product to the cart     # features/inventory.feature:9
+    Given I am logged in as "standard_user"      # features/steps/login_steps.py:18
+    When I add "Sauce Labs Backpack" to the cart # features/steps/inventory_steps.py:27
+    Then the cart badge should show "1"          # features/steps/inventory_steps.py:44
+
+  Scenario: Add multiple products to the cart     # features/inventory.feature:13
+    Given I am logged in as "standard_user"       # features/steps/login_steps.py:18
+    When I add "Sauce Labs Backpack" to the cart  # features/steps/inventory_steps.py:27
+    And I add "Sauce Labs Bike Light" to the cart # features/steps/inventory_steps.py:27
+    Then the cart badge should show "2"           # features/steps/inventory_steps.py:44
+
+  Scenario: Remove a product from the cart               # features/inventory.feature:18
+    Given I am logged in as "standard_user"              # features/steps/login_steps.py:18
+    Given I have added "Sauce Labs Backpack" to the cart # features/steps/inventory_steps.py:33
+    When I remove "Sauce Labs Backpack" from the cart    # features/steps/inventory_steps.py:38
+    Then the cart badge should not be visible            # features/steps/inventory_steps.py:50
+
+  Scenario: Sort products by price low to high                  # features/inventory.feature:23
+    Given I am logged in as "standard_user"                     # features/steps/login_steps.py:18
+    When I sort products by "Price (low to high)"               # features/steps/inventory_steps.py:56
+    Then the first product listed should be "Sauce Labs Onesie" # features/steps/inventory_steps.py:61
+
+Feature: Login # features/login.feature:1
+  As a registered user of Sauce Demo
+  I want to log in with my credentials
+  So that I can access the product inventory
+  Feature: Login  # features/login.feature:1
+
+  Scenario: Successful login with valid credentials                         # features/login.feature:9
+    Given I am on the Sauce Demo login page                                 # features/steps/login_steps.py:13
+    When I log in with username "standard_user" and password "secret_sauce" # features/steps/login_steps.py:27
+    Then I should be redirected to the inventory page                       # features/steps/login_steps.py:34
+    And I should see the page title "Products"                              # features/steps/login_steps.py:40
+
+  Scenario: Login fails with invalid password                                          # features/login.feature:14
+    Given I am on the Sauce Demo login page                                            # features/steps/login_steps.py:13
+    When I log in with username "standard_user" and password "wrong_password"          # features/steps/login_steps.py:27
+    Then I should see an error message containing "Username and password do not match" # features/steps/login_steps.py:46
+
+  Scenario: Login fails with locked out user                                             # features/login.feature:18
+    Given I am on the Sauce Demo login page                                              # features/steps/login_steps.py:13
+    When I log in with username "locked_out_user" and password "secret_sauce"            # features/steps/login_steps.py:27
+    Then I should see an error message containing "Sorry, this user has been locked out" # features/steps/login_steps.py:46
+
+  Scenario Outline: Login fails with missing credentials -- @1.1         # features/login.feature:28
+    Given I am on the Sauce Demo login page                              # features/steps/login_steps.py:13
+    When I log in with username "" and password "secret_sauce"           # features/steps/login_steps.py:27
+    Then I should see an error message containing "Username is required" # features/steps/login_steps.py:46
+
+  Scenario Outline: Login fails with missing credentials -- @1.2         # features/login.feature:29
+    Given I am on the Sauce Demo login page                              # features/steps/login_steps.py:13
+    When I log in with username "standard_user" and password ""          # features/steps/login_steps.py:27
+    Then I should see an error message containing "Password is required" # features/steps/login_steps.py:46
+
